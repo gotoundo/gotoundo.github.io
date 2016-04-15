@@ -570,8 +570,9 @@ var QG_BossFights = [QDef_BossFightPlanning, QDef_BossFightRelics, QDef_BossFigh
 //var QDef_DeusExMachina = new QuestDefinition("deus ex machina", AllItemDefs, AllItemDefs);
 
 var QDef_GenericKill = new QuestDefinition("kills [C]", [], [IDef_ProofOfMurder, IDef_GuardsOvercome]);
-var QDef_BrazenKill = new QuestDefinition("brazenly attacks [C]", [], [IDef_ProofOfMurder, IDef_GuardsOvercome, IDef_WoundVillain]);
-var QDef_AmbushKill = new QuestDefinition("ambushes [C]", [], [IDef_ProofOfMurder, IDef_GuardsOvercome, IDef_WoundVillain]);
+var QDef_BrazenKill = new QuestDefinition("brazenly attacks [C]", [], [IDef_ProofOfMurder, IDef_GuardsOvercome]);
+var QDef_AmbushKill = new QuestDefinition("ambushes [C]", [], [IDef_ProofOfMurder, IDef_GuardsOvercome]);
+var QDef_AmbushWound = new QuestDefinition("ambushes the villain", [], [IDef_WoundVillain]);
 var QDef_CaptureFugitive = new QuestDefinition("apprehends a wanted scofflaw", [IDef_LocationOfCharacter], [IDef_CapturedFugitive]);
 var QDef_SneakPastGuards = new QuestDefinition("sneaks past the guards", [], [IDef_GuardsOvercome]);
 var QDef_GenericAssassinate = new QuestDefinition("assassinates [C]", [IDef_LocationOfCharacter, IDef_AccessToSite], [IDef_ProofOfMurder, IDef_Intimidation]);
@@ -605,6 +606,9 @@ var QDef_InterrogateCharacter = new QuestDefinition("interrogates [C]", [IDef_Lo
 var QDef_TrackCharacter = new QuestDefinition("tracks [C]", [IDef_IdentityOfCharacter], [IDef_LocationOfCharacter]);
 
 var QDef_GainPowerfulAlly = new QuestDefinition("makes a great sacrifice at the altar of the gods", [], [IDef_PowerfulAlly]);
+var QDef_AllySeduce= new QuestDefinition("seduce a disaffected follower", [], [IDef_PowerfulAlly]);
+var QDef_AllyBetray = new QuestDefinition("persuade an ambitious lieutenant to betray their master", [], [IDef_PowerfulAlly]);
+var QDef_AllyHeir = new QuestDefinition("locate and rescue the true heir", [IDef_SecretDocuments], [IDef_PowerfulAlly]);
 var QDef_AbandonedMine = new QuestDefinition("delves into the treacherous depths an abandoned mine", [], [IDef_MagicGem]);
 var QDef_FabledHorde = new QuestDefinition("steals from a fabled hoard of treasure", [], IG_MagicLoot);
 var QDef_MasterSmith = new QuestDefinition("plunders the armory of a master smith", [], [IDef_EnchantedSword]);
@@ -650,20 +654,20 @@ var QDef_HearRumor = new QuestDefinition("hears rumors", [], IG_CommonKnowledge)
 //Favors
 var QDef_RallyTheCommonFolk = new QuestDefinition("rallies the common folk", [IDef_CommonFavor], [IDef_PowerfulAlly,IDef_WoundVillain]);
 
-var QDef_CashInUnderworldFavor = new QuestDefinition("cashes in underworld favor", [IDef_UnderworldFavor], IG_UnderworldGoods)
+var QDef_CashInUnderworldFavor = new QuestDefinition("uses their illicit connection", [IDef_UnderworldFavor], IG_UnderworldGoods)
 var QDef_FavorForUnderworldContact = new QuestDefinition("does a job for an underworld contact", [], [IDef_UnderworldFavor])
 
 var QDef_ApproachedBySecretSociety = new QuestDefinition("is approached by a secret society", [IDef_Fame], IG_UnderworldGoods)
 
-var QDef_CashInNobleFavor = new QuestDefinition("cashes in the noble's favor", [IDef_NobleFavor], IG_NobleRewards)
+var QDef_CashInNobleFavor = new QuestDefinition("uses their aristocratic connection", [IDef_NobleFavor], IG_NobleRewards)
 var QDef_NobleDiscredit = new QuestDefinition("discredits them on behalf of their rival", [IDef_IncriminatingEvidence], [IDef_NobleFavor])
 var QDef_FavorForNobleContact = new QuestDefinition("does a job for a noble", [], [IDef_NobleFavor])
 var QDef_DeliverLoveLetter = new QuestDefinition("delivers a message from star-crossed lover", [IDef_AccessToSite], [IDef_NobleFavor])
 var QDef_DrugDelivery = new QuestDefinition("delivers drugs to decadent noble", [IDef_Drugs], [IDef_NobleFavor, IDef_IncriminatingEvidence])
 var QDef_CureAilingNoble = new QuestDefinition("cures an ailing noble", [IDef_MagicPotion], [IDef_NobleFavor])
 
-var QDef_CashInWizardFavor = new QuestDefinition("cashes in the wizard's favor", [IDef_WizardFavor], IG_WizardRewards)
-var QDef_WizardTask = new QuestDefinition("does a task for a wizard", [], [IDef_WizardFavor])
+var QDef_CashInWizardFavor = new QuestDefinition("requests the casting of a spell", [IDef_WizardFavor], IG_WizardRewards)
+var QDef_WizardTask = new QuestDefinition("performs a dangerous task for a reclusive spellcaster", [], [IDef_WizardFavor])
 var QDef_WizardTaskCouncil = new QuestDefinition("performs a quest for the council of mages", [], [IDef_WizardFavor])
 var QDef_WizardTaskExperiment = new QuestDefinition("captures a runaway experiment", [], [IDef_WizardFavor])
 var QDef_WizardTaskConfinement = new QuestDefinition("frees a mage from confinement", [], [IDef_WizardFavor])
@@ -687,31 +691,16 @@ var QDef_Brew = new QuestDefinition("brews the recipe", [IDef_RareIngredients, I
 
 
 
-
-
-
-
 /*
-Notes
+new item: the identity of the mastermind behind it all
+new item: details of the plot
 
-A corrupted druid causes nature to revolt against civilizaiton itself
+recovers a stolen item/document for an organizaiton [document]
+releases a bound, misunderstood monster from slavery and torture [gain powerful ally]
 
-quell the pain of the natural spirits & gain "harmony amongst the spirits"
-end a magically enhanced natural disaster and gain "dispel the magical natural disaster"
-access to location
-
-
-
-Boss - secret villain. requires:
-evidence of wrongdoing
-powerful ally
-defeat henchmen
-
-A bandit king ravages the countryside
 A necromancer unleashes an undead army upon the populace
 A corrupt baron taxes the peasantry to starvation
 A dragon claims a province of its own
-An usurper seizes the thrown and begins a reign of terror
 
 A sinister advisor misleads the king into ruin
 A cult is abducting and murdering people in order to resurrect a dead God 
