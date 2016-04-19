@@ -58,9 +58,6 @@ function shuffle(array) {
     return array;
 }
 
-
-
-
 var AllQuestDefs = [];
 var AllItemDefs = [];
 var CastOfCharacters = [];
@@ -142,8 +139,6 @@ class Campaign {
                 this.GenerateTasks(createdTask, subQuestChapter); //create sub tasks for the task (recursion) 
             }
         }
-
-
     }
 
     GenerateTaskFromItemDefinition(parentQuest, itemDefinition, mainQuest) {
@@ -157,6 +152,9 @@ class Campaign {
         else {
             suitableQuestDefs.remove(QG_BossFights);
 
+
+
+            //shorten potentially long quest chains
             var generationsFromMain = 0;
             var testQuest = null;
 
@@ -167,11 +165,11 @@ class Campaign {
                 else
                     testQuest = testQuest.parentQuest;
             }
-            
-            if(generationsFromMain > maxQuestDepth)
+
+            if (generationsFromMain > maxQuestDepth)
                 suitableQuestDefs.sort(compareRequiredItems);
-            
-            
+
+
 
         }
 
@@ -228,6 +226,7 @@ class CampaignPlayer {
         this.currentTask = 1;
         this.aboutToPrintSession = true;
         this.aboutToPrintChapter = true;
+        this.npcs = [];
 
     }
 
@@ -329,6 +328,11 @@ class CampaignPlayer {
 
                 //Generate and Announce Task
                 this.currentTask++;
+
+                this.NPCInteractions(chosenQuest);
+
+
+
                 var totalReport = "";
                 var stringStart = "The party ";
 
@@ -404,6 +408,27 @@ class CampaignPlayer {
         }
     }
 
+    NPCInteractions(chosenQuest) {
+        if (chosenQuest.targetCharacter.flag != -1) {
+            this.npcs.push(chosenQuest.targetCharacter);
+           // write("The party befriends " + chosenQuest.targetCharacter.name + ": ");
+        }
+
+        if (chosenQuest.definition.NPCsDestroyed != -1) {
+            var npcToDestroy = null;
+            for (var k = 0; k < this.npcs.length; k++) {
+                if (this.npcs[k].flag == chosenQuest.definition.NPCsDestroyed && this.npcs[k].alive) {
+                    write("Suddenly, the party discoveres that their friend " + this.npcs[k].name + " has been brutally murdered by the villain! ");
+                    this.npcs[k].alive = false;
+                    console.log("Found npcs to kill: " + this.npcs[k].name)
+                    chosenQuest.targetCharacter = this.npcs[k];
+                    break;
+                }
+            }
+
+        }
+    }
+
     GainQuest(quest) {
 
         if (this.questLog.includes(quest))
@@ -437,14 +462,18 @@ class CampaignPlayer {
                 this.GainQuest(newTask);
             }
         }
-
     }
-
-
 }
 
 
 
+
+var NPCflag = {
+    ALLY: 0, //created by helping people, and will help in future, and/or betray
+    PET: 1, //rarely harmed
+    ENEMY: 2, //
+    CONTACT: 3
+};
 
 class QuestDefinition {
     constructor(name, requiredItemDefs, awardedItemDefs) {
@@ -453,6 +482,10 @@ class QuestDefinition {
         this.requiredItemDefs = requiredItemDefs;
         this.awardedItemDefs = awardedItemDefs;
         this.maxItemsRequired = -1;
+
+        this.NPCsCreated = -1; //creates a persistant random npc if non-negative
+        this.NPCsDestroyed = -1; //destroys a persistant random npc if non-negative
+
         AllQuestDefs.push(this);
     }
 
@@ -571,6 +604,8 @@ class Item {
 class Character {
     constructor(quest) { //run as the quest is being generated from a definition
         this.female = Math.random() < 0.5;
+        this.alive = true;
+        this.flag = quest.definition.NPCsCreated;
 
         if (this.female)
             this.name = randomObject(femaleCharacterNames)
@@ -592,12 +627,12 @@ class Site { //run as the quest is being generated from a definition
 }
 
 //Item Definitions
-var IDef_UnderworldFavor = new ItemDefinition("a favor from the underworld");
-var IDef_NobleFavor = new ItemDefinition("a favor from the noble [C]");
+var IDef_UnderworldFavor = new ItemDefinition(["a favor from the underworld", "a rogue's debt"]);
+var IDef_NobleFavor = new ItemDefinition(["a noble's favor", "the service of a noble"]);
 var IDef_CommonFavor = new ItemDefinition("the goodwill of the common folk");
-var IDef_DivineFavor = new ItemDefinition("the favor of a god");
-var IDef_UnholyFavor = new ItemDefinition("the favor of the demon [C]");
-var IDef_WizardFavor = new ItemDefinition("the favor of the wizard [C]");
+var IDef_DivineFavor = new ItemDefinition(["the favor of a god", "the favor of a priest", "the service of a priest"]);
+var IDef_UnholyFavor = new ItemDefinition(["the favor of a demon", "the service of a devil"]);
+var IDef_WizardFavor = new ItemDefinition(["the favor of a wizard", "the service of a wizard"]);
 
 var IDef_TrueName = new ItemDefinition("true name of [C]"); //can be used to bind demons and elementals (maybe even to make airship), ressurect
 var IDef_Prophecy = new ItemDefinition("prophecy"); //can be interpreted
@@ -606,7 +641,7 @@ var IDef_PowerfulAlly = new ItemDefinition("a powerful ally");
 var IDef_Lore = new ItemDefinition(["magical lore", "secret lore", "exotic lore", "mystic lore", "arcane instructions"]);
 var IDef_AccessToSite = new ItemDefinition("access to [S]");
 var IDef_ProofOfMurder = new ItemDefinition("proof of the kill");
-var IDef_CapturedFugitive = new ItemDefinition("the captured fugitive [C]");
+var IDef_CapturedFugitive = new ItemDefinition("the captured fugitive");
 var IDef_ProofOfDevotion = new ItemDefinition("proof of devotion");// not used yet
 var IDef_Fame = new ItemDefinition(["fame", "a reputation", "the attention of the poets", "infamy", "unexpected attentions"]);
 var IDef_BountyNotice = new ItemDefinition("a bounty notice");
@@ -688,11 +723,25 @@ var QG_BossFights = [QDef_BossFightPlanning, QDef_BossFightRelics, QDef_BossFigh
 //Basic Quests
 //var QDef_DeusExMachina = new QuestDefinition("deus ex machina", AllItemDefs, AllItemDefs);
 
+var QDef_DeusExGainAlly = new QuestDefinition("rescues the highborn [C] from the clutches of the villain", [], [IDef_NobleFavor]);
+QDef_DeusExGainAlly.NPCsCreated = NPCflag.ALLY;
+var QDef_DeusExGainAlly = new QuestDefinition("rescues the commoner [C] from the clutches of the villain", [], [IDef_CommonFavor]);
+QDef_DeusExGainAlly.NPCsCreated = NPCflag.ALLY;
+var QDef_DeusExGainAlly = new QuestDefinition("rescues the priest [C] from the clutches of the villain", [], [IDef_DivineFavor]);
+QDef_DeusExGainAlly.NPCsCreated = NPCflag.ALLY;
+var QDef_DeusExGainAlly = new QuestDefinition("rescues the mage [C] from the clutches of the villain", [], [IDef_WizardFavor]);
+QDef_DeusExGainAlly.NPCsCreated = NPCflag.ALLY;
+var QDef_DeusExGainAlly = new QuestDefinition("bargains with the demon [C]", [], [IDef_UnholyFavor]);
+QDef_DeusExGainAlly.NPCsCreated = NPCflag.ALLY;
+
+var QDef_DeusExLoseALly = new QuestDefinition("is distraught by the assassination of a friend, but finds a vital clue at the scene of the crime", [], IG_MagicLoot.concat(IG_Documents));
+QDef_DeusExLoseALly.NPCsDestroyed = NPCflag.ALLY;
+
 var QDef_GenericKill = new QuestDefinition("kills [C]", [], [IDef_ProofOfMurder]);
 var QDef_BrazenKill = new QuestDefinition("brazenly attacks [C]", [], [IDef_ProofOfMurder]);
 var QDef_AmbushKill = new QuestDefinition("ambushes [C]", [], [IDef_ProofOfMurder]);
 var QDef_AmbushWound = new QuestDefinition("ambushes the villain", [], [IDef_WoundVillain]);
-var QDef_CaptureFugitive = new QuestDefinition("apprehends a wanted scofflaw", [IDef_LocationOfCharacter], [IDef_CapturedFugitive]);
+var QDef_CaptureFugitive = new QuestDefinition("apprehends [C], a wanted scofflaw", [IDef_LocationOfCharacter], [IDef_CapturedFugitive]);
 var QDef_SneakPastGuards = new QuestDefinition("sneaks past the sentinels", [], [IDef_GuardsOvercome]);
 var QDef_GenericKill = new QuestDefinition("confronts Captain [C]", [], [IDef_GuardsOvercome]);
 var QDef_GenericAssassinate = new QuestDefinition("assassinates [C]", [IDef_LocationOfCharacter, IDef_AccessToSite], [IDef_ProofOfMurder, IDef_Intimidation]);
@@ -727,8 +776,8 @@ var QDef_TrackCharacter = new QuestDefinition("tracks [C]", [IDef_IdentityOfChar
 
 var QDef_GainPowerfulAlly = new QuestDefinition("makes a great sacrifice at the altar of the gods", [], [IDef_PowerfulAlly]);
 var QDef_AllySeduce = new QuestDefinition("seduces a disaffected follower", [], [IDef_PowerfulAlly]);
-var QDef_AllyBetray = new QuestDefinition("persuades an ambitious lieutenant to betray their master", [], [IDef_PowerfulAlly]);
-var QDef_AllyHeir = new QuestDefinition("locates and rescue the true heir", [IDef_SecretDocuments], [IDef_PowerfulAlly]);
+var QDef_AllyBetray = new QuestDefinition("persuades [C], an ambitious lieutenant, to betray their master", [], [IDef_PowerfulAlly]);
+var QDef_AllyHeir = new QuestDefinition("locates and rescues the true heir [C]", [IDef_SecretDocuments], [IDef_PowerfulAlly]);
 var QDef_AbandonedMine = new QuestDefinition("delves into the treacherous depths an abandoned mine", [], [IDef_MagicGem]);
 var QDef_FabledHorde = new QuestDefinition("steals from a fabled hoard of treasure", [], IG_MagicLoot);
 var QDef_MasterSmith = new QuestDefinition("plunders the armory of a master smith", [], [IDef_EnchantedSword]);
@@ -749,8 +798,8 @@ var QDef_StealFromCharacter = new QuestDefinition("steals from [C]", [IDef_Locat
 var QDef_ActivateArtifct = new QuestDefinition("activates the artifact", [IDef_AncientRelic, IDef_Lore], IG_MagicLoot.concat([IDef_IdentityOfCharacter, IDef_LocationOfCharacter, IDef_AccessToSite, IDef_PowerfulAlly]));
 var QDef_ActivateArtifct = new QuestDefinition("looks deeply within", [IDef_MagicMirror], IG_Info);
 
-var QDef_LocateCharacterByQuestioning = new QuestDefinition("locates their target by questioning [C]", [], [IDef_LocationOfCharacter]);
-var QDef_ResearchCharacter = new QuestDefinition("researches their target", [], IG_Info);
+var QDef_LocateCharacterByQuestioning = new QuestDefinition("locates their target by questioning their associate [C]", [], [IDef_LocationOfCharacter]);
+var QDef_ResearchCharacter = new QuestDefinition("performs thorough research", [], IG_Info);
 var QDef_AskAroundAboutCharacter = new QuestDefinition("asks around", [], [IDef_LocationOfCharacter, IDef_IdentityOfCharacter]);
 
 
@@ -766,7 +815,7 @@ var QDef_AudienceWithRoyalty = new QuestDefinition("is granted an audience at co
 
 //Learning things for free
 var QDef_HearTownCrier = new QuestDefinition("overhears town crier", [], IG_CommonKnowledge)
-var QDef_HearFromInformant = new QuestDefinition("consults with an informant", [], IG_CommonKnowledge) //IDef_UncommonKnowledge
+var QDef_HearFromInformant = new QuestDefinition("consults with their informant [C]", [], IG_CommonKnowledge) //IDef_UncommonKnowledge
 var QDef_Happenstance = new QuestDefinition("stumbles into a random happenstance", [], IG_CommonKnowledge)
 var QDef_LocalPostings = new QuestDefinition("reads local postings", [], IG_CommonKnowledge) //IDef_UncommonKnowledge
 var QDef_HearRumor = new QuestDefinition("hears rumors", [], IG_CommonKnowledge)
@@ -775,23 +824,31 @@ var QDef_HearRumor = new QuestDefinition("hears rumors", [], IG_CommonKnowledge)
 var QDef_RallyTheCommonFolk = new QuestDefinition("rallies the peasants", [IDef_CommonFavor], [IDef_PowerfulAlly, IDef_WoundVillain]);
 
 var QDef_CashInUnderworldFavor = new QuestDefinition("uses their illicit connection", [IDef_UnderworldFavor], IG_UnderworldGoods)
-var QDef_FavorForUnderworldContact = new QuestDefinition("does a job for an underworld contact", [], [IDef_UnderworldFavor])
+var QDef_FavorForUnderworldContact = new QuestDefinition("does a job for an underworld contact known as [C]", [], [IDef_UnderworldFavor])
 
 var QDef_ApproachedBySecretSociety = new QuestDefinition("is approached by a secret society", [IDef_Fame], IG_UnderworldGoods)
 
 var QDef_CashInNobleFavor = new QuestDefinition("uses their aristocratic connection", [IDef_NobleFavor], IG_NobleRewards)
 var QDef_NobleDiscredit = new QuestDefinition("discredits them on behalf of their rival", [IDef_IncriminatingEvidence], [IDef_NobleFavor])
-var QDef_FavorForNobleContact = new QuestDefinition("does a job for a noble", [], [IDef_NobleFavor])
-var QDef_DeliverLoveLetter = new QuestDefinition("delivers a message from star-crossed lover", [IDef_AccessToSite], [IDef_NobleFavor])
-var QDef_DrugDelivery = new QuestDefinition("delivers drugs to decadent noble", [IDef_Drugs], [IDef_NobleFavor, IDef_IncriminatingEvidence])
+QDef_NobleDiscredit.NPCsCreated = NPCflag.ALLY
+var QDef_FavorForNobleContact = new QuestDefinition("does a job for the noble [C]", [], [IDef_NobleFavor])
+QDef_FavorForNobleContact.NPCsCreated = NPCflag.ALLY
+var QDef_DeliverLoveLetter = new QuestDefinition("delivers a message from [C], a star-crossed lover", [IDef_AccessToSite], [IDef_NobleFavor])
+QDef_DeliverLoveLetter.NPCsCreated = NPCflag.ALLY
+var QDef_DrugDelivery = new QuestDefinition("delivers drugs to the decadent noble [C]", [IDef_Drugs], [IDef_NobleFavor, IDef_IncriminatingEvidence])
 var QDef_CureAilingNoble = new QuestDefinition("cures an ailing noble", [IDef_MagicPotion], [IDef_NobleFavor])
+QDef_CureAilingNoble.NPCsCreated = NPCflag.ALLY
 
 var QDef_CashInWizardFavor = new QuestDefinition("requests the casting of a spell", [IDef_WizardFavor], IG_WizardRewards)
 var QDef_WizardTask = new QuestDefinition("performs a dangerous task for a reclusive spellcaster", [], [IDef_WizardFavor])
-var QDef_WizardTaskCouncil = new QuestDefinition("performs a quest for the council of mages", [], [IDef_WizardFavor])
-var QDef_WizardTaskExperiment = new QuestDefinition("captures a runaway experiment", [], [IDef_WizardFavor])
-var QDef_WizardTaskConfinement = new QuestDefinition("frees a mage from confinement", [], [IDef_WizardFavor])
-var QDef_WizardTaskMeteor = new QuestDefinition("recovers fragments of a fallen star for a mage", [], [IDef_WizardFavor])
+QDef_WizardTask.NPCsCreated = NPCflag.ALLY
+var QDef_WizardTaskCouncil = new QuestDefinition("performs a quest for Archmage [C] and the council of mages", [], [IDef_WizardFavor])
+var QDef_WizardTaskExperiment = new QuestDefinition("captures a runaway experiment for the wizard [C]", [], [IDef_WizardFavor])
+QDef_WizardTaskExperiment.NPCsCreated = NPCflag.ALLY
+var QDef_WizardTaskConfinement = new QuestDefinition("frees the mage [C] from confinement", [], [IDef_WizardFavor])
+QDef_WizardTaskConfinement.NPCsCreated = NPCflag.ALLY
+var QDef_WizardTaskMeteor = new QuestDefinition("recovers fragments of a fallen star for the mage [C]", [], [IDef_WizardFavor])
+QDef_WizardTaskMeteor.NPCsCreated = NPCflag.ALLY
 
 var QDef_StealGuardCostumes = new QuestDefinition("steals guard uniforms", [IDef_GuardsOvercome], [IDef_Costumes]);
 var QDef_SneakByInCostume = new QuestDefinition("sneaks inside [S] with a disguise", [IDef_Costumes], [IDef_AccessToSite])
@@ -801,7 +858,7 @@ var QDef_AttendMasqueradeInvited = new QuestDefinition("attends the masquerade",
 //Skulduggery
 var QDef_ForgeEvidence = new QuestDefinition("creates a forgery", [], [IDef_IncriminatingEvidence]);
 var QDef_ConvertEvidenceToBlackmail = new QuestDefinition("blackmails [C]", [IDef_IncriminatingEvidence], IG_Info.concat(IDef_UnderworldFavor, IDef_NobleFavor))
-var QDef_Extort = new QuestDefinition("extorts an aristocrat", [IDef_Intimidation], [IDef_NobleFavor])
+var QDef_Extort = new QuestDefinition("extorts the aristocrat [C]", [IDef_Intimidation], [IDef_NobleFavor])
 var QDef_ReadSecretDocuments = new QuestDefinition("desiphers their meaning", [IDef_SecretDocuments], IG_Info)
 
 //Magical Endevours
@@ -931,7 +988,7 @@ function GenerateCampaign() {
     GenerateSiteNames();
 
     chapterCount = parseInt(document.getElementById("chapterCount").value, 10);
-    maxQuestDepth = Math.max(0,parseInt(document.getElementById("questDepth").value-1, 10));
+    maxQuestDepth = Math.max(0, parseInt(document.getElementById("questDepth").value - 1, 10));
 
     //writeln("Generating Campaign!");
 
