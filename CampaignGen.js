@@ -203,6 +203,7 @@ class CampaignPlayer {
         this.turn = 0;
         this.currentChapter = 1;
         this.currentSession = 1;
+        this.currentTask = 1;
         this.aboutToPrintSession = true;
         this.aboutToPrintChapter = true;
 
@@ -227,11 +228,14 @@ class CampaignPlayer {
                 chosenQuest.complete = true;
                 playedQuest = true;
 
+
                 //Announce New Chapter
                 if (this.aboutToPrintChapter) {
                     writeln("");
                     write("<h3>Chapter " + this.currentChapter + "</h3>");
 
+
+                    var chapterDescription = "In which the party attempts to "
 
                     //Explain main goal
                     var rootOfChosenQuest = chosenQuest;
@@ -241,12 +245,13 @@ class CampaignPlayer {
                         rootOfChosenQuest = rootOfChosenQuest.parentQuest;
                     }
                     if (rootOfChosenQuest)
-                        writeln("<i>In which the party attempts to " + rootOfChosenQuest.headline + ".</i>");
+                        chapterDescription += rootOfChosenQuest.headline + ". "
+
 
                     //List out characters
                     var chapterQuests = this.campaign.questsByChapter[this.currentChapter - 1];
                     var chapterCharacters = [];
-                    var output = "Cast of Characters: ";
+                    var output = "Important characters include ";
                     for (var chapterTask = 0; chapterTask < chapterQuests.length; chapterTask++) {
                         var currentQ = chapterQuests[chapterTask];
                         if (currentQ.featuresCharacter && !chapterCharacters.includes(currentQ.targetCharacter)) {
@@ -254,7 +259,8 @@ class CampaignPlayer {
                             output += currentQ.targetCharacter.FullName() + ", ";
                         }
                     }
-                    writeln(output.substr(0, output.length - 2));
+                    if (chapterCharacters.length > 0)
+                        chapterDescription += output.substr(0, output.length - 2) + ". ";
 
                     //List out Locations
                     var chapterQuests = this.campaign.questsByChapter[this.currentChapter - 1];
@@ -268,8 +274,10 @@ class CampaignPlayer {
                         }
                     }
                     if (chapterSites.length > 0)
-                        writeln(output.substr(0, output.length - 2));
+                        chapterDescription += output.substr(0, output.length - 2) + ". ";
 
+
+                    writeln("<i> " + chapterDescription + "</i>");
 
                     this.currentChapter++;
                 }
@@ -277,6 +285,7 @@ class CampaignPlayer {
                 //Announce New Quest
                 if (this.aboutToPrintSession) {
                     write("<h4>Quest " + this.currentSession + "</h4>");
+                    this.currentTask = 0;
                     this.currentSession++;
 
                     if (chosenQuest.mainQuest) {
@@ -297,26 +306,35 @@ class CampaignPlayer {
 
 
                 //Generate and Announce Task
+                this.currentTask++;
                 var totalReport = "";
                 var stringStart = "The party ";
 
-                if (chosenQuest.requiredItems.length > 0 && Math.random() > .5) {
+
+                if (chosenQuest.requiredItems.length > 0 && (chosenQuest.requiredItems.length != 1 || Math.random() < .25)) {
                     totalReport += "With ";
-                    for (var i = 0; i < chosenQuest.requiredItems.length; i++) {
-                        totalReport += (chosenQuest.requiredItems[i].name);
+                    for (var itemNum = 0; itemNum < chosenQuest.requiredItems.length; itemNum++) {
+                        totalReport += (chosenQuest.requiredItems[itemNum].name);
                         if (chosenQuest.requiredItems.length == 2) {
-                            if (i == 0)
+                            if (itemNum == 0)
                                 totalReport += " and ";
                             else
                                 totalReport += ", ";
                         }
                         else
                             totalReport += ", ";
-                        if (chosenQuest.requiredItems.length > 2 && i == chosenQuest.requiredItems.length - 2)
+                        if (chosenQuest.requiredItems.length > 2 && itemNum == chosenQuest.requiredItems.length - 2)
                             totalReport += "and ";
                     }
 
                     stringStart = stringStart.toLowerCase();
+                }
+                else if (chosenQuest.requiredItems.length == 1 && this.currentTask > 1) {
+                    stringStart = randomObject(["With this, our band of heroes ", "With this, the party ", "Having accomplished this, the party ", "Having achieved that, the party ", "The party ", "The party ", "The party "]);
+                }
+
+                if (chosenQuest.requiredItems.length == 0 && this.currentTask > 1) {
+                    stringStart = "Then, the group ";
                 }
 
                 totalReport += (stringStart + chosenQuest.name + "");
@@ -330,7 +348,7 @@ class CampaignPlayer {
                         totalReport += ". In the aftermath, the party inadvertantly gains something curious: "
                     }
                     else
-                        totalReport += " and gains ";
+                        totalReport += randomObject([" and gains ", ", gaining ", ", thus acquiring ", " and acquires "]);
                     for (var itemNum = 0; itemNum < chosenQuest.awardedItems.length; itemNum++) {
                         totalReport += (chosenQuest.awardedItems[itemNum].name + " ");
                         this.inventory.push(chosenQuest.awardedItems[itemNum]);
@@ -338,10 +356,11 @@ class CampaignPlayer {
                             lastQuestOfSession = true;
                     }
                 }
+                if (chosenQuest == this.campaign.rootQuest)
+                    totalReport += " ";//otherwise final quest would get concatenated too much
+                write(totalReport.substr(0, totalReport.length - 1) + ". ");
 
-                write(totalReport.substr(0, totalReport.length - 1)+". ");
-                
-                
+
 
 
 
@@ -467,10 +486,10 @@ class Quest {
 
     AddAwardedItem(newItem) {
         this.awardedItems.push(newItem);
-       // if (newItem.definition.name.includes("[C]"))
-       //     this.featuresCharacter = true;
-      //  if (newItem.definition.name.includes("[S]"))
-       //     this.featuresSite = true;
+        // if (newItem.definition.name.includes("[C]"))
+        //     this.featuresCharacter = true;
+        //  if (newItem.definition.name.includes("[S]"))
+        //     this.featuresSite = true;
     }
 }
 
@@ -542,19 +561,19 @@ var IDef_TrueName = new ItemDefinition("true name of [C]"); //can be used to bin
 var IDef_Prophecy = new ItemDefinition("prophecy"); //can be interpreted
 
 var IDef_PowerfulAlly = new ItemDefinition("a powerful ally");
-var IDef_Lore = new ItemDefinition("exotic lore");
+var IDef_Lore = new ItemDefinition(["magical lore", "secret lore", "exotic lore", "mystic lore", "arcane instructions"]);
 var IDef_AccessToSite = new ItemDefinition("access to [S]");
 var IDef_ProofOfMurder = new ItemDefinition("proof of the kill");
 var IDef_CapturedFugitive = new ItemDefinition("the captured fugitive [C]");
 var IDef_ProofOfDevotion = new ItemDefinition("proof of devotion");// not used yet
-var IDef_Fame = new ItemDefinition("fame");
+var IDef_Fame = new ItemDefinition(["fame", "a reputation", "the attention of the poets", "infamy", "unexpected attentions"]);
 var IDef_BountyNotice = new ItemDefinition("a bounty notice");
-var IDef_Drugs = new ItemDefinition("some potent drugs");
+var IDef_Drugs = new ItemDefinition(["some potent drugs", "exotic narcotics", "an illegal liquor", "hallucinogenic incense"]);
 var IDef_Intimidation = new ItemDefinition("intimidation");
 
 var IDef_SecretDocuments = new ItemDefinition("secret documents");
-var IDef_TreasureMap = new ItemDefinition("treasure map");
-var IDef_IncriminatingEvidence = new ItemDefinition("incriminating evidence against [C]");
+var IDef_TreasureMap = new ItemDefinition("a treasure map");
+var IDef_IncriminatingEvidence = new ItemDefinition("incriminating evidence");
 
 var IDef_WoundVillain = new ItemDefinition("the wounding of the villain");
 
@@ -685,7 +704,7 @@ var QDef_StealFromSite = new QuestDefinition("steals from [S]", [IDef_AccessToSi
 var QDef_StealFromCharacter = new QuestDefinition("steals from [C]", [IDef_LocationOfCharacter], IG_MagicLoot.concat(IG_Documents));
 
 
-var QDef_ActivateArtifct = new QuestDefinition("activates the artifact", [IDef_AncientRelic, IDef_Lore], IG_RareAndValuable);
+var QDef_ActivateArtifct = new QuestDefinition("activates the artifact", [IDef_AncientRelic, IDef_Lore], IG_MagicLoot.concat([IDef_IdentityOfCharacter, IDef_LocationOfCharacter, IDef_AccessToSite, IDef_PowerfulAlly]));
 var QDef_ActivateArtifct = new QuestDefinition("looks deeply within", [IDef_MagicMirror], IG_Info);
 
 var QDef_LocateCharacterByQuestioning = new QuestDefinition("locates their target by questioning [C]", [], [IDef_LocationOfCharacter]);
@@ -740,7 +759,7 @@ var QDef_AttendMasqueradeInvited = new QuestDefinition("attends the masquerade",
 //Skulduggery
 var QDef_ForgeEvidence = new QuestDefinition("creates a forgery", [], [IDef_IncriminatingEvidence]);
 var QDef_ConvertEvidenceToBlackmail = new QuestDefinition("uses the evidence as blackmail", [IDef_IncriminatingEvidence], IG_Info.concat(IDef_UnderworldFavor, IDef_NobleFavor))
-var QDef_Extort = new QuestDefinition("extorts a favor from [C]", [IDef_Intimidation], [IDef_NobleFavor])
+var QDef_Extort = new QuestDefinition("extorts a favor from a noble", [IDef_Intimidation], [IDef_NobleFavor])
 var QDef_ReadSecretDocuments = new QuestDefinition("desiphers secret documents", [IDef_SecretDocuments], IG_Info)
 
 //Magical Endevours
@@ -872,7 +891,7 @@ function GenerateCampaign() {
 
     //writeln("Generating Campaign!");
 
-    currentCampaign = new Campaign(Math.max(chapterCount,2));
+    currentCampaign = new Campaign(Math.max(chapterCount, 2));
 
     //writeln("Playing Campaign!");
     currentCampaignPlayer = new CampaignPlayer();
