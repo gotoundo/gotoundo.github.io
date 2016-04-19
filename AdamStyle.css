@@ -48,3 +48,9 @@ h5 {
     font-size: .423cm;
     font-weight: 900
 }
+
+
+.bigButton{
+    height:50px;
+    width:150px;
+}

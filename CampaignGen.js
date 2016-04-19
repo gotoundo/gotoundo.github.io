@@ -530,10 +530,10 @@ class Site { //run as the quest is being generated from a definition
 
 //Item Definitions
 var IDef_UnderworldFavor = new ItemDefinition("a favor from the underworld");
-var IDef_NobleFavor = new ItemDefinition("a favor from a noble");
+var IDef_NobleFavor = new ItemDefinition("a favor from the noble [C]");
 var IDef_CommonFavor = new ItemDefinition("the goodwill of the common folk");
 var IDef_DivineFavor = new ItemDefinition("the favor of a god");
-var IDef_UnholyFavor = new ItemDefinition("the favor of the damned");
+var IDef_UnholyFavor = new ItemDefinition("the favor of the demon [C]");
 var IDef_WizardFavor = new ItemDefinition("the favor of the wizard [C]");
 
 var IDef_TrueName = new ItemDefinition("true name of [C]"); //can be used to bind demons and elementals (maybe even to make airship), ressurect
@@ -543,7 +543,7 @@ var IDef_PowerfulAlly = new ItemDefinition("a powerful ally");
 var IDef_Lore = new ItemDefinition("exotic lore");
 var IDef_AccessToSite = new ItemDefinition("access to [S]");
 var IDef_ProofOfMurder = new ItemDefinition("proof of the kill");
-var IDef_CapturedFugitive = new ItemDefinition("captured fugitive");
+var IDef_CapturedFugitive = new ItemDefinition("the captured fugitive [C]");
 var IDef_ProofOfDevotion = new ItemDefinition("proof of devotion");// not used yet
 var IDef_Fame = new ItemDefinition("fame");
 var IDef_BountyNotice = new ItemDefinition("a bounty notice");
@@ -569,7 +569,7 @@ var IDef_MagicMirror = new ItemDefinition("a magic mirror");
 var IDef_Egg = new ItemDefinition("a curious egg");
 
 var IDef_GuardsOvercome = new ItemDefinition("the defeat of the guards");
-var IDef_EvilSource = new ItemDefinition("the source of the evil");
+var IDef_EvilSource = new ItemDefinition("knowledge of the source of the evil");
 
 var IDef_Costumes = new ItemDefinition("costumes");
 
@@ -643,7 +643,7 @@ var QDef_FreedomLabyrinth = new QuestDefinition("escapes the labyrinth after bei
 var QDef_FreedomLocation = new QuestDefinition("escapes from [S]", [], [IDef_Freedom]);
 var QDef_FreedomGuards = new QuestDefinition("escapes from [S]", [IDef_GuardsOvercome], [IDef_Freedom]);
 var QDef_FreedomJailer = new QuestDefinition("fools the jailer after being captured", [], [IDef_Freedom]);
-var QDef_FreedomTorturer = new QuestDefinition("overpowers the torturer after being betrayed and captured", [], [IDef_Freedom]);
+var QDef_FreedomTorturer = new QuestDefinition("is betrayed, but overpowers their torturer", [], [IDef_Freedom]);
 var QDef_FreedomColliseum = new QuestDefinition("battles through the colliseum after being captured", [], [IDef_Freedom]);
 var QDef_FreedomDungeon = new QuestDefinition("navigates the dungeon after being captured", [], [IDef_Freedom]);
 var QDef_FreedomIllusion = new QuestDefinition("escapes an idyllic illusion", [], [IDef_Freedom]);
@@ -663,9 +663,9 @@ var QDef_InterrogateCharacter = new QuestDefinition("interrogates [C]", [IDef_Lo
 var QDef_TrackCharacter = new QuestDefinition("tracks [C]", [IDef_IdentityOfCharacter], [IDef_LocationOfCharacter]);
 
 var QDef_GainPowerfulAlly = new QuestDefinition("makes a great sacrifice at the altar of the gods", [], [IDef_PowerfulAlly]);
-var QDef_AllySeduce = new QuestDefinition("seduce a disaffected follower", [], [IDef_PowerfulAlly]);
-var QDef_AllyBetray = new QuestDefinition("persuade an ambitious lieutenant to betray their master", [], [IDef_PowerfulAlly]);
-var QDef_AllyHeir = new QuestDefinition("locate and rescue the true heir", [IDef_SecretDocuments], [IDef_PowerfulAlly]);
+var QDef_AllySeduce = new QuestDefinition("seduces a disaffected follower", [], [IDef_PowerfulAlly]);
+var QDef_AllyBetray = new QuestDefinition("persuades an ambitious lieutenant to betray their master", [], [IDef_PowerfulAlly]);
+var QDef_AllyHeir = new QuestDefinition("locates and rescue the true heir", [IDef_SecretDocuments], [IDef_PowerfulAlly]);
 var QDef_AbandonedMine = new QuestDefinition("delves into the treacherous depths an abandoned mine", [], [IDef_MagicGem]);
 var QDef_FabledHorde = new QuestDefinition("steals from a fabled hoard of treasure", [], IG_MagicLoot);
 var QDef_MasterSmith = new QuestDefinition("plunders the armory of a master smith", [], [IDef_EnchantedSword]);
