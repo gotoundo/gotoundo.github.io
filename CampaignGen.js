@@ -233,6 +233,20 @@ class CampaignPlayer {
     PlayCampaign(campaign) {
         this.campaign = campaign;
         this.turn = 1;
+
+        for (var i = 0; i < 4; i++)
+            this.GainRandomAlly();
+
+
+       /* write("<h3>Campaign Overview</h3>");
+        writeln("The party's ultimate goal is to " + this.campaign.rootQuest.headline + ".");
+
+        writeln("Starting allies include: ")
+        for (var i = 0; i < this.npcs.length; i++)
+            writebullet(this.npcs[i].name);
+
+*/
+
         this.GainQuest(this.campaign.firstQuest)
         this.PlayQuest();
     }
@@ -267,6 +281,24 @@ class CampaignPlayer {
                     }
                     if (rootOfChosenQuest)
                         chapterDescription += rootOfChosenQuest.headline + ". "
+
+                    //main goal's requirements
+                    chapterDescription += "In order to do this, the party must gain ";
+                    for (var itemNum = 0; itemNum < rootOfChosenQuest.requiredItems.length; itemNum++) {
+                        chapterDescription += (rootOfChosenQuest.requiredItems[itemNum].name);
+                        if (rootOfChosenQuest.requiredItems.length == 2) {
+                            if (itemNum == 0)
+                                chapterDescription += " and ";
+                            else
+                                chapterDescription += ", ";
+                        }
+                        else
+                            chapterDescription += ", ";
+                        if (rootOfChosenQuest.requiredItems.length > 2 && itemNum == rootOfChosenQuest.requiredItems.length - 2)
+                            chapterDescription += "and ";
+                    }
+                    chapterDescription = chapterDescription.substr(0,chapterDescription.length-2)+". ";
+                    
 
 
                     //List out characters
@@ -411,7 +443,7 @@ class CampaignPlayer {
     NPCInteractions(chosenQuest) {
         if (chosenQuest.targetCharacter.flag != -1) {
             this.npcs.push(chosenQuest.targetCharacter);
-           // write("The party befriends " + chosenQuest.targetCharacter.name + ": ");
+            // write("The party befriends " + chosenQuest.targetCharacter.name + ": ");
         }
 
         if (chosenQuest.definition.NPCsDestroyed != -1) {
@@ -427,6 +459,11 @@ class CampaignPlayer {
             }
 
         }
+    }
+
+    GainRandomAlly() {
+        var newAlly = new Character(NPCflag.ALLY);
+        this.npcs.push(newAlly);
     }
 
     GainQuest(quest) {
@@ -494,7 +531,7 @@ class QuestDefinition {
 
         //var randomName = ;
         //names.splice(names.indexOf(randomName), 1); //permanently removes name from array;
-        newQuest.targetCharacter = new Character(newQuest); //FIX
+        newQuest.targetCharacter = new Character(newQuest.definition.NPCsCreated); //FIX
 
         // siteNames.splice(siteNames.indexOf(randomSiteName), 1); //permanently removes name from array;
         newQuest.targetSite = new Site(randomObject(siteNames)); //FIX
@@ -602,10 +639,10 @@ class Item {
 }
 
 class Character {
-    constructor(quest) { //run as the quest is being generated from a definition
+    constructor(flag) { //run as the quest is being generated from a definition
         this.female = Math.random() < 0.5;
         this.alive = true;
-        this.flag = quest.definition.NPCsCreated;
+        this.flag = flag;
 
         if (this.female)
             this.name = randomObject(femaleCharacterNames)
