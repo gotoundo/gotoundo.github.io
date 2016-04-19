@@ -2,6 +2,7 @@
 
 
 
+
 //add a method to remove multiple elements from an array
 if (!Array.prototype.remove) {
     Array.prototype.remove = function (vals, all) {
@@ -68,8 +69,8 @@ var femaleCharacterNames = ["Aelia", "Antonina", "Augustina", "Caecilia", "Caeli
 
 var siteNames = []
 
-var siteThemes = ["Forest", "Hill", "Jungle", "Marshland", "Swampland", "Misty", "Mysterious", "Haunted", "Holy", "Volcanic", "Wooded", "Hidden", "Imperial", "Royal", "Island", "Coastal", "Arctic", "Underwater", "Tropical", "Elven", "Dwarven", "Ancient"]
-var siteNouns = ["Necropolis", "Arch", "Castle", "Citadel", "College", "Colossus", "Fortress", "Gardens", "Library", "Lighthouse", "Monument", "Observatory", "Palace", "Shrine", "Statue", "Temple", "Tower", "Wall", "Ruins", "Dungeon", "Hideout"]
+var siteThemes = ["Urban", "Forest", "Hill", "Jungle", "Marshland", "Swampland", "Misty", "Mysterious", "Haunted", "Holy", "Volcanic", "Wooded", "Hidden", "Imperial", "Royal", "Island", "Coastal", "Arctic", "Underwater", "Tropical", "Elven", "Dwarven", "Ancient"]
+var siteNouns = ["City", "Battlefield", "Necropolis", "Arch", "Castle", "Citadel", "College", "Coliseum", "Arena", "Colossus", "Fortress", "Gardens", "Labyrinth", "Library", "Lighthouse", "Monument", "Observatory", "Palace", "Shrine", "Statue", "Temple", "Tower", "Wall", "Ruins", "Dungeon", "Hideout"]
 
 
 function GenerateSiteNames() {
@@ -151,12 +152,33 @@ class Campaign {
 
         var suitableQuestDefs = AllQuestDefs.slice();
 
-        if (mainQuest) {
-            //  while(suitableQuestDefs)
+        if (mainQuest)
             suitableQuestDefs = [randomObject(QG_BossFights)];
-        }
-        else
+        else {
             suitableQuestDefs.remove(QG_BossFights);
+
+            var generationsFromMain = 0;
+            var testQuest = null;
+
+            while (!testQuest || !testQuest.mainQuest) {
+                generationsFromMain++;
+                if (!testQuest)
+                    testQuest = parentQuest;
+                else
+                    testQuest = testQuest.parentQuest;
+            }
+            
+            if(generationsFromMain > maxQuestDepth)
+                suitableQuestDefs.sort(compareRequiredItems);
+            
+            
+
+        }
+
+
+
+
+        //MaxItemCount
 
 
 
@@ -348,7 +370,7 @@ class CampaignPlayer {
                         totalReport += ". In the aftermath, the party inadvertantly gains something curious: "
                     }
                     else
-                        totalReport += randomObject([" and gains ", ", gaining ", ", thus acquiring ", " and acquires "]);
+                        totalReport += randomObject([" and gains ", " and gains ", " and gains ", ", gaining ", " and obtains ", ", obtaining ", " and acquires ", ", acquiring "]);
                     for (var itemNum = 0; itemNum < chosenQuest.awardedItems.length; itemNum++) {
                         totalReport += (chosenQuest.awardedItems[itemNum].name + " ");
                         this.inventory.push(chosenQuest.awardedItems[itemNum]);
@@ -454,7 +476,26 @@ class QuestDefinition {
 
         return newQuest;
     }
+
+    MaxItemCount() {
+        if (this.maxItemsRequired == -1)
+            return this.requiredItemDefs.length;
+        else
+            return this.maxItemsRequired;
+    }
 }
+
+
+//compare quest definitions by required items
+function compareRequiredItems(a, b) {
+    if (a.MaxItemCount() > b.MaxItemCount())
+        return 1;
+    else if (a.MaxItemCount() < b.MaxItemCount())
+        return -1;
+    else
+        return 0;
+}
+
 
 class Quest {
     constructor(definition) {
@@ -492,6 +533,7 @@ class Quest {
         //     this.featuresSite = true;
     }
 }
+
 
 
 class ItemDefinition {
@@ -623,7 +665,7 @@ var QDef_BossFightRelics = new QuestDefinition("defeats Cult Leader [C] using le
 QDef_BossFightRelics.headline = "thwart [C], leader of a doomsday cult, using the three relics of prophecy"
 var QDef_BossFightAlliance = new QuestDefinition("defeats the scourge [C] with an alliance", [IDef_PowerfulAlly, IDef_PowerfulAlly, IDef_PowerfulAlly], AllItemDefs);
 QDef_BossFightAlliance.headline = "overcome the realm-threatening scourge [C] by assembling an alliance"
-var QDef_BossFightUnmask = new QuestDefinition("defeats Vizier [C] by unmasking them", [IDef_IdentityOfCharacter, IDef_PowerfulAlly, IDef_IncriminatingEvidence, IDef_GuardsOvercome], AllItemDefs);
+var QDef_BossFightUnmask = new QuestDefinition("defeats Vizier [C] by unmasking them", [IDef_Freedom, IDef_PowerfulAlly, IDef_IncriminatingEvidence, IDef_GuardsOvercome], AllItemDefs);
 QDef_BossFightUnmask.headline = "reveal the corrupt advisor [C] by proving their guilt"
 var QDef_BossFightAssassinate = new QuestDefinition("assassinates the tyrant [C], restoring justice to the realm", [IDef_LocationOfCharacter, IDef_AccessToSite, IDef_GuardsOvercome], AllItemDefs);
 QDef_BossFightAssassinate.headline = "assassinate the tyrant [C], whose cruelty and perversity knows no bounds"
@@ -651,7 +693,7 @@ var QDef_BrazenKill = new QuestDefinition("brazenly attacks [C]", [], [IDef_Proo
 var QDef_AmbushKill = new QuestDefinition("ambushes [C]", [], [IDef_ProofOfMurder]);
 var QDef_AmbushWound = new QuestDefinition("ambushes the villain", [], [IDef_WoundVillain]);
 var QDef_CaptureFugitive = new QuestDefinition("apprehends a wanted scofflaw", [IDef_LocationOfCharacter], [IDef_CapturedFugitive]);
-var QDef_SneakPastGuards = new QuestDefinition("sneaks past the guards", [], [IDef_GuardsOvercome]);
+var QDef_SneakPastGuards = new QuestDefinition("sneaks past the sentinels", [], [IDef_GuardsOvercome]);
 var QDef_GenericKill = new QuestDefinition("confronts Captain [C]", [], [IDef_GuardsOvercome]);
 var QDef_GenericAssassinate = new QuestDefinition("assassinates [C]", [IDef_LocationOfCharacter, IDef_AccessToSite], [IDef_ProofOfMurder, IDef_Intimidation]);
 
@@ -663,11 +705,11 @@ var QDef_MedusaFight = new QuestDefinition("battles the medusa", [IDef_MagicMirr
 var QDef_FreedomLabyrinth = new QuestDefinition("escapes the labyrinth after being thrown inside", [], [IDef_Freedom]);
 var QDef_FreedomLocation = new QuestDefinition("escapes from [S]", [], [IDef_Freedom]);
 var QDef_FreedomGuards = new QuestDefinition("escapes from [S]", [IDef_GuardsOvercome], [IDef_Freedom]);
-var QDef_FreedomJailer = new QuestDefinition("fools the jailer after being captured", [], [IDef_Freedom]);
+var QDef_FreedomJailer = new QuestDefinition("is captured, but fools the jailer", [], [IDef_Freedom]);
 var QDef_FreedomTorturer = new QuestDefinition("is betrayed, but overpowers their torturer", [], [IDef_Freedom]);
-var QDef_FreedomColliseum = new QuestDefinition("battles through the colliseum after being captured", [], [IDef_Freedom]);
-var QDef_FreedomDungeon = new QuestDefinition("navigates the dungeon after being captured", [], [IDef_Freedom]);
-var QDef_FreedomIllusion = new QuestDefinition("escapes an idyllic illusion", [], [IDef_Freedom]);
+var QDef_FreedomColliseum = new QuestDefinition("is enslaved, and must battle through the colliseum of [S]", [], [IDef_Freedom]);
+var QDef_FreedomDungeon = new QuestDefinition("is thrown into a prison below [S], but is able to navigate this dungeon", [], [IDef_Freedom]);
+var QDef_FreedomIllusion = new QuestDefinition("realizes it has been trapped within an idyllic illusion", [], [IDef_Freedom]);
 
 var QDef_GenericBeastFight = new QuestDefinition("kills a mythical beast", [], IG_MagicLoot.concat(IDef_Fame));
 var QDef_DragonFight = new QuestDefinition("defeats the dragon there", [IDef_AccessToSite], IG_MagicLoot.concat(IDef_Fame));
@@ -730,7 +772,7 @@ var QDef_LocalPostings = new QuestDefinition("reads local postings", [], IG_Comm
 var QDef_HearRumor = new QuestDefinition("hears rumors", [], IG_CommonKnowledge)
 
 //Favors
-var QDef_RallyTheCommonFolk = new QuestDefinition("rallies the common folk", [IDef_CommonFavor], [IDef_PowerfulAlly, IDef_WoundVillain]);
+var QDef_RallyTheCommonFolk = new QuestDefinition("rallies the peasants", [IDef_CommonFavor], [IDef_PowerfulAlly, IDef_WoundVillain]);
 
 var QDef_CashInUnderworldFavor = new QuestDefinition("uses their illicit connection", [IDef_UnderworldFavor], IG_UnderworldGoods)
 var QDef_FavorForUnderworldContact = new QuestDefinition("does a job for an underworld contact", [], [IDef_UnderworldFavor])
@@ -758,9 +800,9 @@ var QDef_AttendMasqueradeInvited = new QuestDefinition("attends the masquerade",
 
 //Skulduggery
 var QDef_ForgeEvidence = new QuestDefinition("creates a forgery", [], [IDef_IncriminatingEvidence]);
-var QDef_ConvertEvidenceToBlackmail = new QuestDefinition("uses the evidence as blackmail", [IDef_IncriminatingEvidence], IG_Info.concat(IDef_UnderworldFavor, IDef_NobleFavor))
-var QDef_Extort = new QuestDefinition("extorts a favor from a noble", [IDef_Intimidation], [IDef_NobleFavor])
-var QDef_ReadSecretDocuments = new QuestDefinition("desiphers secret documents", [IDef_SecretDocuments], IG_Info)
+var QDef_ConvertEvidenceToBlackmail = new QuestDefinition("blackmails [C]", [IDef_IncriminatingEvidence], IG_Info.concat(IDef_UnderworldFavor, IDef_NobleFavor))
+var QDef_Extort = new QuestDefinition("extorts an aristocrat", [IDef_Intimidation], [IDef_NobleFavor])
+var QDef_ReadSecretDocuments = new QuestDefinition("desiphers their meaning", [IDef_SecretDocuments], IG_Info)
 
 //Magical Endevours
 var QDef_ResearchLore = new QuestDefinition("researches forgotten texts", [], [IDef_Lore, IDef_EvilSource]);
@@ -882,12 +924,14 @@ var currentCampaignPlayer;
 var generateOutput = "";
 
 var chapterCount = 5;
+var maxQuestDepth = 3;
 
 function GenerateCampaign() {
     generateOutput = "";
     GenerateSiteNames();
 
     chapterCount = parseInt(document.getElementById("chapterCount").value, 10);
+    maxQuestDepth = Math.max(0,parseInt(document.getElementById("questDepth").value-1, 10));
 
     //writeln("Generating Campaign!");
 
