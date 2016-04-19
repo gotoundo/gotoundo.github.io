@@ -870,7 +870,7 @@ function GenerateCampaign() {
 
     //writeln("Generating Campaign!");
 
-    currentCampaign = new Campaign(chapterCount);
+    currentCampaign = new Campaign(Math.max(chapterCount,2));
 
     //writeln("Playing Campaign!");
     currentCampaignPlayer = new CampaignPlayer();
