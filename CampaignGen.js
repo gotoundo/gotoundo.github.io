@@ -300,7 +300,7 @@ class CampaignPlayer {
                 var totalReport = "";
                 var stringStart = "The party ";
 
-                if (chosenQuest.requiredItems.length > 0) {
+                if (chosenQuest.requiredItems.length > 0 && Math.random() > .5) {
                     totalReport += "With ";
                     for (var i = 0; i < chosenQuest.requiredItems.length; i++) {
                         totalReport += (chosenQuest.requiredItems[i].name);
@@ -339,7 +339,9 @@ class CampaignPlayer {
                     }
                 }
 
-                writebullet(totalReport);
+                write(totalReport.substr(0, totalReport.length - 1)+". ");
+                
+                
 
 
 
@@ -649,7 +651,7 @@ var QDef_FreedomDungeon = new QuestDefinition("navigates the dungeon after being
 var QDef_FreedomIllusion = new QuestDefinition("escapes an idyllic illusion", [], [IDef_Freedom]);
 
 var QDef_GenericBeastFight = new QuestDefinition("kills a mythical beast", [], IG_MagicLoot.concat(IDef_Fame));
-var QDef_DragonFight = new QuestDefinition("defeats the dragon", [IDef_AccessToSite], IG_MagicLoot.concat(IDef_Fame));
+var QDef_DragonFight = new QuestDefinition("defeats the dragon there", [IDef_AccessToSite], IG_MagicLoot.concat(IDef_Fame));
 var QDef_FollowTreasureMap = new QuestDefinition("uncovers a hoard", [IDef_TreasureMap, IDef_AccessToSite], IG_MagicLoot);
 var QDef_HatchDragon = new QuestDefinition("hatches the egg", [IDef_Egg], [IDef_PowerfulAlly]);
 
@@ -738,8 +740,8 @@ var QDef_AttendMasqueradeInvited = new QuestDefinition("attends the masquerade",
 //Skulduggery
 var QDef_ForgeEvidence = new QuestDefinition("creates a forgery", [], [IDef_IncriminatingEvidence]);
 var QDef_ConvertEvidenceToBlackmail = new QuestDefinition("uses the evidence as blackmail", [IDef_IncriminatingEvidence], IG_Info.concat(IDef_UnderworldFavor, IDef_NobleFavor))
-var QDef_Extort = new QuestDefinition("extort for favor from [C]", [IDef_Intimidation], [IDef_NobleFavor])
-var QDef_ReadSecretDocuments = new QuestDefinition("desipher secret documents", [IDef_SecretDocuments], IG_Info)
+var QDef_Extort = new QuestDefinition("extorts a favor from [C]", [IDef_Intimidation], [IDef_NobleFavor])
+var QDef_ReadSecretDocuments = new QuestDefinition("desiphers secret documents", [IDef_SecretDocuments], IG_Info)
 
 //Magical Endevours
 var QDef_ResearchLore = new QuestDefinition("researches forgotten texts", [], [IDef_Lore, IDef_EvilSource]);
