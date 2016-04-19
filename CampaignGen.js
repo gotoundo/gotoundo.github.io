@@ -58,6 +58,25 @@ function shuffle(array) {
     return array;
 }
 
+function OxfordComma(namedObjects) {
+    var totalReport = "";
+    for (var itemNum = 0; itemNum < namedObjects.length; itemNum++) {
+        totalReport += (namedObjects[itemNum].name);
+        if (namedObjects.length == 2) {
+            if (itemNum == 0)
+                totalReport += " and ";
+            else
+                totalReport += ", ";
+        }
+        else
+            totalReport += ", ";
+        if (namedObjects.length > 2 && itemNum == namedObjects.length - 2)
+            totalReport += "and ";
+    }
+    totalReport = totalReport.substr(0, totalReport.length - 2);
+    return totalReport;
+}
+
 var AllQuestDefs = [];
 var AllItemDefs = [];
 var CastOfCharacters = [];
@@ -238,14 +257,14 @@ class CampaignPlayer {
             this.GainRandomAlly();
 
 
-       /* write("<h3>Campaign Overview</h3>");
-        writeln("The party's ultimate goal is to " + this.campaign.rootQuest.headline + ".");
-
-        writeln("Starting allies include: ")
-        for (var i = 0; i < this.npcs.length; i++)
-            writebullet(this.npcs[i].name);
-
-*/
+        /* write("<h3>Campaign Overview</h3>");
+         writeln("The party's ultimate goal is to " + this.campaign.rootQuest.headline + ".");
+ 
+         writeln("Starting allies include: ")
+         for (var i = 0; i < this.npcs.length; i++)
+             writebullet(this.npcs[i].name);
+ 
+ */
 
         this.GainQuest(this.campaign.firstQuest)
         this.PlayQuest();
@@ -283,51 +302,37 @@ class CampaignPlayer {
                         chapterDescription += rootOfChosenQuest.headline + ". "
 
                     //main goal's requirements
-                    chapterDescription += "In order to do this, the party must gain ";
-                    for (var itemNum = 0; itemNum < rootOfChosenQuest.requiredItems.length; itemNum++) {
-                        chapterDescription += (rootOfChosenQuest.requiredItems[itemNum].name);
-                        if (rootOfChosenQuest.requiredItems.length == 2) {
-                            if (itemNum == 0)
-                                chapterDescription += " and ";
-                            else
-                                chapterDescription += ", ";
-                        }
-                        else
-                            chapterDescription += ", ";
-                        if (rootOfChosenQuest.requiredItems.length > 2 && itemNum == rootOfChosenQuest.requiredItems.length - 2)
-                            chapterDescription += "and ";
-                    }
-                    chapterDescription = chapterDescription.substr(0,chapterDescription.length-2)+". ";
-                    
+                    chapterDescription += "In order to do this, the party must gain "+OxfordComma(rootOfChosenQuest.requiredItems)+". ";
+                 
+
 
 
                     //List out characters
                     var chapterQuests = this.campaign.questsByChapter[this.currentChapter - 1];
                     var chapterCharacters = [];
-                    var output = "Important characters include ";
+
                     for (var chapterTask = 0; chapterTask < chapterQuests.length; chapterTask++) {
                         var currentQ = chapterQuests[chapterTask];
                         if (currentQ.featuresCharacter && !chapterCharacters.includes(currentQ.targetCharacter)) {
                             chapterCharacters.push(currentQ.targetCharacter);
-                            output += currentQ.targetCharacter.FullName() + ", ";
                         }
                     }
                     if (chapterCharacters.length > 0)
-                        chapterDescription += output.substr(0, output.length - 2) + ". ";
+                        chapterDescription += "Important characters include " + OxfordComma(chapterCharacters) + ". ";
+
+                    //output.substr(0, output.length - 2) + ". ";
 
                     //List out Locations
                     var chapterQuests = this.campaign.questsByChapter[this.currentChapter - 1];
                     var chapterSites = [];
-                    var output = "Relevant locations include ";
                     for (var chapterTask = 0; chapterTask < chapterQuests.length; chapterTask++) {
                         var currentQ = chapterQuests[chapterTask];
                         if (currentQ.featuresSite && !chapterSites.includes(currentQ.targetSite)) {
                             chapterSites.push(currentQ.targetSite);
-                            output += currentQ.targetSite.name + ", ";
                         }
                     }
                     if (chapterSites.length > 0)
-                        chapterDescription += output.substr(0, output.length - 2) + ". ";
+                        chapterDescription += "Relevant locations include "+OxfordComma(chapterSites) + ". ";
 
 
                     writeln("<i> " + chapterDescription + "</i>");
@@ -371,20 +376,8 @@ class CampaignPlayer {
 
                 if (chosenQuest.requiredItems.length > 0 && (chosenQuest.requiredItems.length != 1 || Math.random() < .25)) {
                     totalReport += "With ";
-                    for (var itemNum = 0; itemNum < chosenQuest.requiredItems.length; itemNum++) {
-                        totalReport += (chosenQuest.requiredItems[itemNum].name);
-                        if (chosenQuest.requiredItems.length == 2) {
-                            if (itemNum == 0)
-                                totalReport += " and ";
-                            else
-                                totalReport += ", ";
-                        }
-                        else
-                            totalReport += ", ";
-                        if (chosenQuest.requiredItems.length > 2 && itemNum == chosenQuest.requiredItems.length - 2)
-                            totalReport += "and ";
-                    }
-
+                    totalReport += OxfordComma(chosenQuest.requiredItems);
+                    totalReport += ", "
                     stringStart = stringStart.toLowerCase();
                 }
                 else if (chosenQuest.requiredItems.length == 1 && this.currentTask > 1) {
@@ -473,7 +466,7 @@ class CampaignPlayer {
 
         this.questLog.push(quest);
 
-        var report = "New " + (quest.mainQuest ? "main " : "") + "quest gained: " + quest.name;
+        /*var report = "New " + (quest.mainQuest ? "main " : "") + "quest gained: " + quest.name;
 
         if (quest.requiredItems.length > 0) {
             report += ". Requires: ";
@@ -491,8 +484,8 @@ class CampaignPlayer {
         else
             report += ". Grants no items";
 
-        //writeln(report);
-
+        writeln(report);
+*/
         for (var i = 0; i < quest.taskQuests.length; i++) {
             var newTask = quest.taskQuests[i];
             if (!this.questLog.includes(newTask)) {
@@ -783,8 +776,8 @@ var QDef_SneakPastGuards = new QuestDefinition("sneaks past the sentinels", [], 
 var QDef_GenericKill = new QuestDefinition("confronts Captain [C]", [], [IDef_GuardsOvercome]);
 var QDef_GenericAssassinate = new QuestDefinition("assassinates [C]", [IDef_LocationOfCharacter, IDef_AccessToSite], [IDef_ProofOfMurder, IDef_Intimidation]);
 
-var QDef_SootheSpirits = new QuestDefinition("soothe the rioting spirits", [IDef_AccessToSite], [IDef_PeaceSpirits]);
-var QDef_DruidicRite = new QuestDefinition("perform an ancient druidic rite", [IDef_Lore, IDef_AccessToSite], [IDef_PeaceNaturalDisaster]);
+var QDef_SootheSpirits = new QuestDefinition("soothes the rioting spirits", [IDef_AccessToSite], [IDef_PeaceSpirits]);
+var QDef_DruidicRite = new QuestDefinition("performs an ancient druidic rite", [IDef_Lore, IDef_AccessToSite], [IDef_PeaceNaturalDisaster]);
 
 var QDef_MedusaFight = new QuestDefinition("battles the medusa", [IDef_MagicMirror], [IDef_ProofOfMurder]);
 
@@ -837,7 +830,7 @@ var QDef_ActivateArtifct = new QuestDefinition("looks deeply within", [IDef_Magi
 
 var QDef_LocateCharacterByQuestioning = new QuestDefinition("locates their target by questioning their associate [C]", [], [IDef_LocationOfCharacter]);
 var QDef_ResearchCharacter = new QuestDefinition("performs thorough research", [], IG_Info);
-var QDef_AskAroundAboutCharacter = new QuestDefinition("asks around", [], [IDef_LocationOfCharacter, IDef_IdentityOfCharacter]);
+var QDef_AskAroundAboutCharacter = new QuestDefinition("asks informed individuals", [], [IDef_LocationOfCharacter, IDef_IdentityOfCharacter]);
 
 
 var QDef_BountyNotice = new QuestDefinition("hears about a bounty", [], [IDef_BountyNotice]);
