@@ -63,7 +63,8 @@ function shuffle(array) {
 var AllQuestDefs = [];
 var AllItemDefs = [];
 var CastOfCharacters = [];
-var names = ["Aelianus", "Aelius", "Aemilianus", "Aemilius", "Aetius", "Agrippa", "Ahenobarbus", "Albanus", "Albinus", "Albus", "Antoninus", "Antonius", "Appius", "Aquila", "Aquilinus", "Atilius", "Augustinus", "Augustus", "Aulus", "Aurelianus", "Aurelius", "Avilius", "Avitus", "Balbinus", "Balbus", "Blandinus", "Blandus", "Blasius", "Brutus", "Caecilius", "Caelinus", "Caelius", "Caesar", "Caius", "Camillus", "Cassian", "Cassianus", "Cassius", "Celsus", "Cicero", "Claudius", "Cloelius", "Cnaeus", "Cornelius", "Crispinus", "Crispus", "Cyprianus", "Decimus", "Diocletianus", "Domitianus", "Domitius", "Drusus", "Duilius", "Egnatius", "Ennius", "Fabianus", "Fabius", "Fabricius", "Faustinus", "Faustus", "Felix", "Festus", "Flavianus", "Flavius", "Florianus", "Florus", "Fulvius", "Gaius", "Gallus", "Germanus", "Glaucia", "Gnaeus", "Gordianus", "Gratianus", "Hadrianus", "Herminius", "Hilarius", "Horatius", "Hortensius", "Ianuarius", "Iovianus", "Iovita", "Iulianus", "Iulius", "Iunius", "Iuvenalis", "Januarius", "Jovian", "Julius", "Junius", "Laelius", "Laurentinus", "Laurentius", "Livianus", "Livius", "Longinus", "Lucanus", "Lucianus", "Lucilius", "Lucius", "Lucretius", "Manlius", "Marcellinus", "Marcellus", "Marcius", "Marcus", "Marianus", "Marinus", "Marius", "Martialis", "Martinus", "Maxentius", "Maximianus", "Maximilianus", "Maximinus", "Maximus", "Naevius", "Nerva", "Nonus", "Octavianus", "Octavius", "Otho", "Ovidius", "Paulinus", "Paulus", "Petronius", "Plinius", "Pompeius", "Pompilius", "Pomponius", "Pontius", "Porcius", "Priscus", "Publius", "Quintilianus", "Quintillus", "Quintinus", "Quintus", "Regulus", "Rufinus", "Rufus", "Sabinus", "Saturninus", "Scaevola", "Secundinus", "Secundus", "Seneca", "Septimius", "Septimus", "Sergius", "Servius", "Severianus", "Severinus", "Severus", "Sextilius", "Sextus", "Silvanus", "Spurius", "Tacitus", "Tarquinius", "Tatianus", "Tatius", "Terentius", "Tertius", "Thracius", "Tiberius", "Tiburtius", "Titianus", "Titus", "Traianus", "Tullius", "Valens", "Valentinianus", "Valentinus", "Valerianus", "Valerius", "Varinius", "Varius", "Vergilius", "Verginius", "Vespasianus", "Vibianus", "Vibius", "Vinicius", "Vitus", "Aelia", "Antonina", "Augustina", "Caecilia", "Caelina", "Decima", "Domitia", "Fabricia", "Faustina", "Flaviana", "Floriana", "Fulvia", "Gratiana", "Hilaria", "Iulia", "Julia", "Junia", "Liviana", "Longina", "Lucia", "Lucilia", "Paula", "Pomponia", "Porcia", "Priscilla", "Rufina", "Sabina", "Tacita", "Tatiana", "Tullia", "Valentina", "Valeria", "Virginia", "Aeliana", "Aemilia", "Agrippina", "Aurelia", "Balbina", "Blandina", "Cassia", "Cloelia", "Cornelia", "Drusa", "Fabia", "Fabiola", "Germana", "Herminia", "Hortensia", "Iuliana", "Iunia", "Juliana", "Laurentia", "Luciana", "Lucretia", "Marcella", "Marina", "Maximiliana", "Octavia", "Paulina", "Petronia", "Valeriana", "Varinia", "Vita", "Aemiliana", "Albina", "Antonia", "Aquilina", "Augusta", "Aureliana", "Caelia", "Camilla", "Claudia", "Domitilla", "Drusilla", "Fabiana", "Fausta", "Flavia", "Hadriana", "Horatia", "Laelia", "Laurentina", "Lucilla", "Marcellina", "Marcia", "Mariana", "Martina", "Maxima", "Prisca", "Quintina", "Saturnina", "Septima", "Severina", "Titiana", "Verginia", "Vibiana"]
+var maleCharacterNames = ["Aelianus", "Aelius", "Aemilianus", "Aemilius", "Aetius", "Agrippa", "Ahenobarbus", "Albanus", "Albinus", "Albus", "Antoninus", "Antonius", "Appius", "Aquila", "Aquilinus", "Atilius", "Augustinus", "Augustus", "Aulus", "Aurelianus", "Aurelius", "Avilius", "Avitus", "Balbinus", "Balbus", "Blandinus", "Blandus", "Blasius", "Brutus", "Caecilius", "Caelinus", "Caelius", "Caesar", "Caius", "Camillus", "Cassian", "Cassianus", "Cassius", "Celsus", "Cicero", "Claudius", "Cloelius", "Cnaeus", "Cornelius", "Crispinus", "Crispus", "Cyprianus", "Decimus", "Diocletianus", "Domitianus", "Domitius", "Drusus", "Duilius", "Egnatius", "Ennius", "Fabianus", "Fabius", "Fabricius", "Faustinus", "Faustus", "Felix", "Festus", "Flavianus", "Flavius", "Florianus", "Florus", "Fulvius", "Gaius", "Gallus", "Germanus", "Glaucia", "Gnaeus", "Gordianus", "Gratianus", "Hadrianus", "Herminius", "Hilarius", "Horatius", "Hortensius", "Ianuarius", "Iovianus", "Iovita", "Iulianus", "Iulius", "Iunius", "Iuvenalis", "Januarius", "Jovian", "Julius", "Junius", "Laelius", "Laurentinus", "Laurentius", "Livianus", "Livius", "Longinus", "Lucanus", "Lucianus", "Lucilius", "Lucius", "Lucretius", "Manlius", "Marcellinus", "Marcellus", "Marcius", "Marcus", "Marianus", "Marinus", "Marius", "Martialis", "Martinus", "Maxentius", "Maximianus", "Maximilianus", "Maximinus", "Maximus", "Naevius", "Nerva", "Nonus", "Octavianus", "Octavius", "Otho", "Ovidius", "Paulinus", "Paulus", "Petronius", "Plinius", "Pompeius", "Pompilius", "Pomponius", "Pontius", "Porcius", "Priscus", "Publius", "Quintilianus", "Quintillus", "Quintinus", "Quintus", "Regulus", "Rufinus", "Rufus", "Sabinus", "Saturninus", "Scaevola", "Secundinus", "Secundus", "Seneca", "Septimius", "Septimus", "Sergius", "Servius", "Severianus", "Severinus", "Severus", "Sextilius", "Sextus", "Silvanus", "Spurius", "Tacitus", "Tarquinius", "Tatianus", "Tatius", "Terentius", "Tertius", "Thracius", "Tiberius", "Tiburtius", "Titianus", "Titus", "Traianus", "Tullius", "Valens", "Valentinianus", "Valentinus", "Valerianus", "Valerius", "Varinius", "Varius", "Vergilius", "Verginius", "Vespasianus", "Vibianus", "Vibius", "Vinicius", "Vitus"];
+var femaleCharacterNames = ["Aelia", "Antonina", "Augustina", "Caecilia", "Caelina", "Decima", "Domitia", "Fabricia", "Faustina", "Flaviana", "Floriana", "Fulvia", "Gratiana", "Hilaria", "Iulia", "Julia", "Junia", "Liviana", "Longina", "Lucia", "Lucilia", "Paula", "Pomponia", "Porcia", "Priscilla", "Rufina", "Sabina", "Tacita", "Tatiana", "Tullia", "Valentina", "Valeria", "Virginia", "Aeliana", "Aemilia", "Agrippina", "Aurelia", "Balbina", "Blandina", "Cassia", "Cloelia", "Cornelia", "Drusa", "Fabia", "Fabiola", "Germana", "Herminia", "Hortensia", "Iuliana", "Iunia", "Juliana", "Laurentia", "Luciana", "Lucretia", "Marcella", "Marina", "Maximiliana", "Octavia", "Paulina", "Petronia", "Valeriana", "Varinia", "Vita", "Aemiliana", "Albina", "Antonia", "Aquilina", "Augusta", "Aureliana", "Caelia", "Camilla", "Claudia", "Domitilla", "Drusilla", "Fabiana", "Fausta", "Flavia", "Hadriana", "Horatia", "Laelia", "Laurentina", "Lucilla", "Marcellina", "Marcia", "Mariana", "Martina", "Maxima", "Prisca", "Quintina", "Saturnina", "Septima", "Severina", "Titiana", "Verginia", "Vibiana"];
 
 var siteNames = []
 
@@ -82,13 +83,21 @@ function GenerateSiteNames() {
 
 
 var lastMadeQuest = [];
-var majorQuestItems = []
 class Campaign {
     constructor(chapters) {
+        this.majorQuestItems = [];
+        this.questsByChapter = new Array(chapters); //contains generated tasks
+        for (var i = 0; i < chapters; i++) {
+            // console.log("creating chapter group "+i);
+            this.questsByChapter[i] = [];
+        }
+
         this.rootQuest = null;
         this.firstQuest = null;
         this.chapterCount = chapters;
         this.GeneratePlot(chapters);
+
+
     }
 
     GeneratePlot(chapters) {
@@ -103,8 +112,6 @@ class Campaign {
 
             //var mainQuestItemNum =  0; //the first required item of a main quest spawns another main quest
             var mainQuestItemNum = Math.floor(Math.random() * parentQuest.definition.requiredItemDefs.length) // if this is a main quest, pick a random required item to spawn another main quest
-
-
 
             var requiredItemDefs = parentQuest.definition.requiredItemDefs.slice();
 
@@ -121,11 +128,17 @@ class Campaign {
                 var createdTask = this.GenerateTaskFromItemDefinition(parentQuest, currentTaskItemDef, taskIsMainQuest); //create task for the parent
                 lastMadeQuest.push(createdTask);
 
+                if (taskIsMainQuest)
+                    this.questsByChapter[chapter - 2].push(createdTask);
+                else
+                    this.questsByChapter[chapter - 1].push(createdTask);
+
+                var subQuestChapter = chapter;
                 if (taskIsMainQuest) {
                     this.firstQuest = createdTask;
-                    chapter--;
+                    subQuestChapter--;
                 }
-                this.GenerateTasks(createdTask, chapter); //create sub tasks for the task (recursion) 
+                this.GenerateTasks(createdTask, subQuestChapter); //create sub tasks for the task (recursion) 
             }
         }
 
@@ -157,11 +170,11 @@ class Campaign {
                 var taskQuest = suitableQuestDefs[i].CreateQuest(); //create the task quest
                 var newItem = itemDefinition.CreateItem(parentQuest); //create the item. make it required by parent, and given by child.
 
-                parentQuest.requiredItems.push(newItem);
-                taskQuest.awardedItems.push(newItem);
+                parentQuest.AddRequiredItem(newItem);
+                taskQuest.AddAwardedItem(newItem);
 
                 if (parentQuest.mainQuest)
-                    majorQuestItems.push(newItem);
+                    this.majorQuestItems.push(newItem);
 
                 this.LinkParentAndTask(parentQuest, taskQuest);
 
@@ -195,32 +208,15 @@ class CampaignPlayer {
 
     }
 
-    AnnounceNextChapter() {
-        //this.aboutToPrintChapter = true;
-
-    }
-
-    AnnounceNextSession() {
-        //this.aboutToPrintSession = true;
-
-    }
-
-
     PlayCampaign(campaign) {
         this.campaign = campaign;
         this.turn = 1;
         this.GainQuest(this.campaign.firstQuest)
         this.PlayQuest();
-
-
-
     }
 
     PlayQuest() {
-
-        //   writeln("Session " + this.turn);
         this.turn++;
-
         var playedQuest = false;
         var chosenQuest = null;
         for (var i = 0; i < this.questLog.length; i++) {
@@ -231,11 +227,13 @@ class CampaignPlayer {
                 chosenQuest.complete = true;
                 playedQuest = true;
 
+                //Announce New Chapter
                 if (this.aboutToPrintChapter) {
                     writeln("");
                     write("<h3>Chapter " + this.currentChapter + "</h3>");
-                    this.currentChapter++;
 
+
+                    //Explain main goal
                     var rootOfChosenQuest = chosenQuest;
                     var lootOfRoot = chosenQuest.awardedItems[0];
                     while (!rootOfChosenQuest.mainQuest) {
@@ -244,9 +242,39 @@ class CampaignPlayer {
                     }
                     if (rootOfChosenQuest)
                         writeln("<i>In which the party attempts to " + rootOfChosenQuest.headline + ".</i>");
+
+                    //List out characters
+                    var chapterQuests = this.campaign.questsByChapter[this.currentChapter - 1];
+                    var chapterCharacters = [];
+                    var output = "Cast of Characters: ";
+                    for (var chapterTask = 0; chapterTask < chapterQuests.length; chapterTask++) {
+                        var currentQ = chapterQuests[chapterTask];
+                        if (currentQ.featuresCharacter && !chapterCharacters.includes(currentQ.targetCharacter)) {
+                            chapterCharacters.push(currentQ.targetCharacter);
+                            output += currentQ.targetCharacter.FullName() + ", ";
+                        }
+                    }
+                    writeln(output.substr(0, output.length - 2));
+
+                    //List out Locations
+                    var chapterQuests = this.campaign.questsByChapter[this.currentChapter - 1];
+                    var chapterSites = [];
+                    var output = "Relevant locations include ";
+                    for (var chapterTask = 0; chapterTask < chapterQuests.length; chapterTask++) {
+                        var currentQ = chapterQuests[chapterTask];
+                        if (currentQ.featuresSite && !chapterSites.includes(currentQ.targetSite)) {
+                            chapterSites.push(currentQ.targetSite);
+                            output += currentQ.targetSite.name + ", ";
+                        }
+                    }
+                    if (chapterSites.length > 0)
+                        writeln(output.substr(0, output.length - 2));
+
+
+                    this.currentChapter++;
                 }
 
-
+                //Announce New Quest
                 if (this.aboutToPrintSession) {
                     write("<h4>Quest " + this.currentSession + "</h4>");
                     this.currentSession++;
@@ -268,7 +296,7 @@ class CampaignPlayer {
                 }
 
 
-
+                //Generate and Announce Task
                 var totalReport = "";
                 var stringStart = "The party ";
 
@@ -306,7 +334,7 @@ class CampaignPlayer {
                     for (var itemNum = 0; itemNum < chosenQuest.awardedItems.length; itemNum++) {
                         totalReport += (chosenQuest.awardedItems[itemNum].name + " ");
                         this.inventory.push(chosenQuest.awardedItems[itemNum]);
-                        if (majorQuestItems.includes(chosenQuest.awardedItems[itemNum]))
+                        if (this.campaign.majorQuestItems.includes(chosenQuest.awardedItems[itemNum]))
                             lastQuestOfSession = true;
                     }
                 }
@@ -390,7 +418,7 @@ class QuestDefinition {
 
         //var randomName = ;
         //names.splice(names.indexOf(randomName), 1); //permanently removes name from array;
-        newQuest.targetCharacter = new Character(randomObject(names)); //FIX
+        newQuest.targetCharacter = new Character(newQuest); //FIX
 
         // siteNames.splice(siteNames.indexOf(randomSiteName), 1); //permanently removes name from array;
         newQuest.targetSite = new Site(randomObject(siteNames)); //FIX
@@ -412,6 +440,8 @@ class Quest {
         this.name = definition.name;
         this.definition = definition;
         this.headline = definition.headline;
+        this.featuresCharacter = definition.name.includes("[C]");
+        this.featuresSite = definition.name.includes("[S]");
         this.complete = false;
 
         this.mainQuest = false;
@@ -423,6 +453,22 @@ class Quest {
 
         this.requiredItems = []
         this.awardedItems = []
+    }
+
+    AddRequiredItem(newItem) {
+        this.requiredItems.push(newItem);
+        if (newItem.definition.name.includes("[C]"))
+            this.featuresCharacter = true;
+        if (newItem.definition.name.includes("[S]"))
+            this.featuresSite = true;
+    }
+
+    AddAwardedItem(newItem) {
+        this.awardedItems.push(newItem);
+       // if (newItem.definition.name.includes("[C]"))
+       //     this.featuresCharacter = true;
+      //  if (newItem.definition.name.includes("[S]"))
+       //     this.featuresSite = true;
     }
 }
 
@@ -460,13 +506,23 @@ class Item {
 }
 
 class Character {
-    constructor(name) {
-        this.name = name;
+    constructor(quest) { //run as the quest is being generated from a definition
+        this.female = Math.random() < 0.5;
+
+        if (this.female)
+            this.name = randomObject(femaleCharacterNames)
+        else
+            this.name = randomObject(maleCharacterNames)
+
         CastOfCharacters.push(this);
+    }
+
+    FullName() {
+        return this.name;
     }
 }
 
-class Site {
+class Site { //run as the quest is being generated from a definition
     constructor(name) {
         this.name = name;
     }
@@ -478,7 +534,7 @@ var IDef_NobleFavor = new ItemDefinition("a favor from a noble");
 var IDef_CommonFavor = new ItemDefinition("the goodwill of the common folk");
 var IDef_DivineFavor = new ItemDefinition("the favor of a god");
 var IDef_UnholyFavor = new ItemDefinition("the favor of the damned");
-var IDef_WizardFavor = new ItemDefinition("the favor of a wizard");
+var IDef_WizardFavor = new ItemDefinition("the favor of the wizard [C]");
 
 var IDef_TrueName = new ItemDefinition("true name of [C]"); //can be used to bind demons and elementals (maybe even to make airship), ressurect
 var IDef_Prophecy = new ItemDefinition("prophecy"); //can be interpreted
@@ -569,12 +625,13 @@ var QG_BossFights = [QDef_BossFightPlanning, QDef_BossFightRelics, QDef_BossFigh
 //Basic Quests
 //var QDef_DeusExMachina = new QuestDefinition("deus ex machina", AllItemDefs, AllItemDefs);
 
-var QDef_GenericKill = new QuestDefinition("kills [C]", [], [IDef_ProofOfMurder, IDef_GuardsOvercome]);
-var QDef_BrazenKill = new QuestDefinition("brazenly attacks [C]", [], [IDef_ProofOfMurder, IDef_GuardsOvercome]);
-var QDef_AmbushKill = new QuestDefinition("ambushes [C]", [], [IDef_ProofOfMurder, IDef_GuardsOvercome]);
+var QDef_GenericKill = new QuestDefinition("kills [C]", [], [IDef_ProofOfMurder]);
+var QDef_BrazenKill = new QuestDefinition("brazenly attacks [C]", [], [IDef_ProofOfMurder]);
+var QDef_AmbushKill = new QuestDefinition("ambushes [C]", [], [IDef_ProofOfMurder]);
 var QDef_AmbushWound = new QuestDefinition("ambushes the villain", [], [IDef_WoundVillain]);
 var QDef_CaptureFugitive = new QuestDefinition("apprehends a wanted scofflaw", [IDef_LocationOfCharacter], [IDef_CapturedFugitive]);
 var QDef_SneakPastGuards = new QuestDefinition("sneaks past the guards", [], [IDef_GuardsOvercome]);
+var QDef_GenericKill = new QuestDefinition("confronts Captain [C]", [], [IDef_GuardsOvercome]);
 var QDef_GenericAssassinate = new QuestDefinition("assassinates [C]", [IDef_LocationOfCharacter, IDef_AccessToSite], [IDef_ProofOfMurder, IDef_Intimidation]);
 
 var QDef_SootheSpirits = new QuestDefinition("soothe the rioting spirits", [IDef_AccessToSite], [IDef_PeaceSpirits]);
@@ -606,7 +663,7 @@ var QDef_InterrogateCharacter = new QuestDefinition("interrogates [C]", [IDef_Lo
 var QDef_TrackCharacter = new QuestDefinition("tracks [C]", [IDef_IdentityOfCharacter], [IDef_LocationOfCharacter]);
 
 var QDef_GainPowerfulAlly = new QuestDefinition("makes a great sacrifice at the altar of the gods", [], [IDef_PowerfulAlly]);
-var QDef_AllySeduce= new QuestDefinition("seduce a disaffected follower", [], [IDef_PowerfulAlly]);
+var QDef_AllySeduce = new QuestDefinition("seduce a disaffected follower", [], [IDef_PowerfulAlly]);
 var QDef_AllyBetray = new QuestDefinition("persuade an ambitious lieutenant to betray their master", [], [IDef_PowerfulAlly]);
 var QDef_AllyHeir = new QuestDefinition("locate and rescue the true heir", [IDef_SecretDocuments], [IDef_PowerfulAlly]);
 var QDef_AbandonedMine = new QuestDefinition("delves into the treacherous depths an abandoned mine", [], [IDef_MagicGem]);
@@ -652,7 +709,7 @@ var QDef_LocalPostings = new QuestDefinition("reads local postings", [], IG_Comm
 var QDef_HearRumor = new QuestDefinition("hears rumors", [], IG_CommonKnowledge)
 
 //Favors
-var QDef_RallyTheCommonFolk = new QuestDefinition("rallies the common folk", [IDef_CommonFavor], [IDef_PowerfulAlly,IDef_WoundVillain]);
+var QDef_RallyTheCommonFolk = new QuestDefinition("rallies the common folk", [IDef_CommonFavor], [IDef_PowerfulAlly, IDef_WoundVillain]);
 
 var QDef_CashInUnderworldFavor = new QuestDefinition("uses their illicit connection", [IDef_UnderworldFavor], IG_UnderworldGoods)
 var QDef_FavorForUnderworldContact = new QuestDefinition("does a job for an underworld contact", [], [IDef_UnderworldFavor])
