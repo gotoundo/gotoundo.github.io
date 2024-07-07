@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Away</title>
+    <title>Mirror of Madness</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -85,7 +85,7 @@
         const loadingDiv = document.getElementById('loading');
         let model;
         let conversation = [];
-        let conversation_log = "Start a fucking thought! You coward! "; 
+        let conversation_log = "";
 
         // Initialize the model
         async function initModel() {
@@ -94,7 +94,6 @@
                 loadingDiv.style.display = 'none';
                 chatMessages.style.display = 'block';
                 document.getElementById('user-input').style.display = 'flex';
-                addMessage("Start a fucking thought! You coward! ", false);
             } catch (error) {
                 console.error('Error initializing model:', error);
                 loadingDiv.textContent = 'Error loading model. Please refresh and try again.';
@@ -114,8 +113,8 @@
 
         
         async function getBotResponse(message) {
-            conversation_log += message
-            const result = await model(conversation_log, {
+            conversation_log += " " + message + " " 
+            const result = await model(message, {
                 max_new_tokens: 100,
                 temperature: 0.7,
                 top_k: 50,
@@ -124,6 +123,7 @@
             });
 
             let botResponse = result[0].generated_text;
+            conversation_log += botResponse
             return botResponse;
         }
 
