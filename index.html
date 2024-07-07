@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser-based AI Chatbot</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/toxicity"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #chat-container {
+            width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: white;
+        }
+        #user-input {
+            display: flex;
+            border-top: 1px solid #ccc;
+        }
+        #message-input {
+            flex-grow: 1;
+            border: none;
+            padding: 10px;
+        }
+        #send-button {
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            max-width: 70%;
+        }
+        .user-message {
+            background-color: #DCF8C6;
+            align-self: flex-end;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #E0E0E0;
+            align-self: flex-start;
+        }
+        #loading {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="loading">Loading AI model...</div>
+        <div id="chat-messages" style="display: none;"></div>
+        <div id="user-input" style="display: none;">
+            <input type="text" id="message-input" placeholder="Type your message...">
+            <button id="send-button">Send</button>
+        </div>
+    </div>
+
+    <script>
+        const chatMessages = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const loadingDiv = document.getElementById('loading');
+        let model;
+
+        // Load the toxicity model
+        toxicity.load(0.9).then(loadedModel => {
+            model = loadedModel;
+            loadingDiv.style.display = 'none';
+            chatMessages.style.display = 'block';
+            document.getElementById('user-input').style.display = 'flex';
+            addMessage("Hello! I'm a simple AI chatbot. How can I help you today?", false);
+        });
+
+        function addMessage(message, isUser = false) {
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
+            messageElement.classList.add('message');
+            messageElement.classList.add(isUser ? 'user-message' : 'bot-message');
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function getBotResponse(message) {
+            const predictions = await model.classify([message]);
+            const toxicPrediction = predictions[6];
+            const isToxic = toxicPrediction.results[0].match;
+
+            if (isToxic) {
+                return "I'd prefer not to respond to that kind of message. Could we talk about something else?";
+            } else if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
+                return "Hello! How can I assist you today?";
+            } else if (message.toLowerCase().includes('how are you')) {
+                return "As an AI, I don't have feelings, but I'm functioning well. How can I help you?";
+            } else if (message.toLowerCase().includes('bye') || message.toLowerCase().includes('goodbye')) {
+                return "Goodbye! Have a great day!";
+            } else {
+                return "That's an interesting point. Could you tell me more about that?";
+            }
+        }
+
+        async function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                messageInput.value = '';
+                
+                const botResponse = await getBotResponse(message);
+                addMessage(botResponse);
+            }
+        }
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
