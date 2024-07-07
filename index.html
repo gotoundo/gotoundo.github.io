@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Browser-based AI Chatbot</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/toxicity"></script>
+    <title>Transformers.js LLM Chatbot</title>
+    <script src="https://cdn.jsdelivr.net/npm/@xenova/transformers"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,6 +20,7 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             overflow: hidden;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         #chat-messages {
             height: 400px;
@@ -36,19 +36,21 @@
             flex-grow: 1;
             border: none;
             padding: 10px;
+            font-size: 14px;
         }
         #send-button {
             border: none;
             background-color: #4CAF50;
             color: white;
-            padding: 10px;
+            padding: 10px 15px;
             cursor: pointer;
         }
         .message {
             margin-bottom: 10px;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 8px 12px;
+            border-radius: 18px;
             max-width: 70%;
+            word-wrap: break-word;
         }
         .user-message {
             background-color: #DCF8C6;
@@ -67,7 +69,7 @@
 </head>
 <body>
     <div id="chat-container">
-        <div id="loading">Loading AI model...</div>
+        <div id="loading">Loading AI model... This may take a few minutes.</div>
         <div id="chat-messages" style="display: none;"></div>
         <div id="user-input" style="display: none;">
             <input type="text" id="message-input" placeholder="Type your message...">
@@ -80,16 +82,19 @@
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const loadingDiv = document.getElementById('loading');
-        let model;
+        let pipeline;
+        let conversation = [];
 
-        // Load the toxicity model
-        toxicity.load(0.9).then(loadedModel => {
-            model = loadedModel;
+        // Initialize the model
+        async function initModel() {
+            pipeline = await pipeline('text-generation', 'Xenova/distilgpt2');
             loadingDiv.style.display = 'none';
             chatMessages.style.display = 'block';
             document.getElementById('user-input').style.display = 'flex';
-            addMessage("Hello! I'm a simple AI chatbot. How can I help you today?", false);
-        });
+            addMessage("Hello! I'm an AI chatbot. How can I help you today?", false);
+        }
+
+        initModel();
 
         function addMessage(message, isUser = false) {
             const messageElement = document.createElement('div');
@@ -101,21 +106,24 @@
         }
 
         async function getBotResponse(message) {
-            const predictions = await model.classify([message]);
-            const toxicPrediction = predictions[6];
-            const isToxic = toxicPrediction.results[0].match;
+            conversation.push("Human: " + message);
+            const fullPrompt = conversation.join("\n") + "\nAI:";
+            
+            const result = await pipeline(fullPrompt, {
+                max_new_tokens: 50,
+                temperature: 0.7,
+                repetition_penalty: 1.2,
+            });
 
-            if (isToxic) {
-                return "I'd prefer not to respond to that kind of message. Could we talk about something else?";
-            } else if (message.toLowerCase().includes('hello') || message.toLowerCase().includes('hi')) {
-                return "Hello! How can I assist you today?";
-            } else if (message.toLowerCase().includes('how are you')) {
-                return "As an AI, I don't have feelings, but I'm functioning well. How can I help you?";
-            } else if (message.toLowerCase().includes('bye') || message.toLowerCase().includes('goodbye')) {
-                return "Goodbye! Have a great day!";
-            } else {
-                return "That's an interesting point. Could you tell me more about that?";
+            const botResponse = result[0].generated_text.split("AI:").pop().trim();
+            conversation.push("AI: " + botResponse);
+
+            // Keep conversation history limited to last 6 messages
+            if (conversation.length > 6) {
+                conversation = conversation.slice(-6);
             }
+
+            return botResponse;
         }
 
         async function sendMessage() {
@@ -123,15 +131,26 @@
             if (message) {
                 addMessage(message, true);
                 messageInput.value = '';
+                sendButton.disabled = true;
+                messageInput.disabled = true;
                 
-                const botResponse = await getBotResponse(message);
-                addMessage(botResponse);
+                try {
+                    const botResponse = await getBotResponse(message);
+                    addMessage(botResponse);
+                } catch (error) {
+                    console.error('Error:', error);
+                    addMessage("I'm sorry, I encountered an error. Please try again.", false);
+                } finally {
+                    sendButton.disabled = false;
+                    messageInput.disabled = false;
+                }
             }
         }
 
         sendButton.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
                 sendMessage();
             }
         });
